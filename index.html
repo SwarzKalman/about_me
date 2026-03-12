@@ -8,6 +8,7 @@
       content="Kapcsolatfelvételi oldal – gyors elérés e-mailen, telefonon és közösségi csatornákon."
     />
     <meta name="theme-color" content="#0f172a" />
+    <meta name="ga4-measurement-id" content="G-QQKYB7SDJ6" />
     <link rel="canonical" href="https://feketekalman.hu/" />
     <title>Contact | KÁLMÁN Fekete</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,6 +18,14 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QQKYB7SDJ6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+    </script>
   </head>
   <body>
     <main class="container">
@@ -231,6 +240,79 @@
     </main>
 
     <script>
+      const GA_MEASUREMENT_ID = (document.querySelector('meta[name="ga4-measurement-id"]')?.content || "G-QQKYB7SDJ6").trim();
+      const isAnalyticsEnabled = /^G-[A-Z0-9]+$/i.test(GA_MEASUREMENT_ID);
+
+      if (isAnalyticsEnabled && window.gtag) {
+        gtag("config", GA_MEASUREMENT_ID, {
+          send_page_view: true,
+          anonymize_ip: true,
+          debug_mode: /localhost|127\.0\.0\.1/.test(window.location.hostname)
+        });
+      }
+
+      function parseAttribution() {
+        const params = new URLSearchParams(window.location.search);
+        const get = (key) => (params.get(key) || "").trim();
+        const referrerHost = document.referrer ? new URL(document.referrer).hostname : "";
+
+        return {
+          utm_source: get("utm_source") || "(direct)",
+          utm_medium: get("utm_medium") || "(none)",
+          utm_campaign: get("utm_campaign") || "(not set)",
+          utm_term: get("utm_term") || "",
+          utm_content: get("utm_content") || "",
+          referrer_host: referrerHost
+        };
+      }
+
+      function getFirstTouch(currentAttr) {
+        const storageKey = "ga_first_touch_v1";
+        try {
+          const existing = localStorage.getItem(storageKey);
+          if (existing) return JSON.parse(existing);
+
+          const firstTouch = {
+            source: currentAttr.utm_source,
+            medium: currentAttr.utm_medium,
+            campaign: currentAttr.utm_campaign,
+            first_seen_at: new Date().toISOString()
+          };
+
+          localStorage.setItem(storageKey, JSON.stringify(firstTouch));
+          return firstTouch;
+        } catch {
+          return {
+            source: currentAttr.utm_source,
+            medium: currentAttr.utm_medium,
+            campaign: currentAttr.utm_campaign,
+            first_seen_at: ""
+          };
+        }
+      }
+
+      const attribution = parseAttribution();
+      const firstTouch = getFirstTouch(attribution);
+
+      function trackEvent(name, params = {}) {
+        if (!window.gtag || !isAnalyticsEnabled) return;
+
+        gtag("event", name, {
+          page_lang: document.documentElement.lang || "en",
+          page_type: "contact",
+          source: attribution.utm_source,
+          medium: attribution.utm_medium,
+          campaign: attribution.utm_campaign,
+          term: attribution.utm_term,
+          content: attribution.utm_content,
+          referrer_host: attribution.referrer_host,
+          first_touch_source: firstTouch.source,
+          first_touch_medium: firstTouch.medium,
+          first_touch_campaign: firstTouch.campaign,
+          ...params
+        });
+      }
+
       const dictionary = {
         hu: {
           htmlLang: "hu",
@@ -364,6 +446,10 @@
 
         document.getElementById("lang-flag").innerHTML = flagSvgs[selected.htmlLang] || flagSvgs.hu;
         document.getElementById("lang-current").textContent = selected.htmlLang.toUpperCase();
+
+        trackEvent("language_change", {
+          lang: selected.htmlLang
+        });
       }
 
       const langTrigger = document.getElementById("lang-trigger");
@@ -396,8 +482,36 @@
       buildContacts();
       applyLanguage("en");
 
+      trackEvent("landing_view", {
+        engagement_point: "initial_load"
+      });
+
       const emailReveal = document.getElementById("email-reveal");
       const whatsappLink = document.getElementById("whatsapp-link");
+
+      document.querySelectorAll(".contacts .contact-card[href]").forEach((link) => {
+        link.addEventListener("click", () => {
+          let channel = "other";
+          if (link.href.includes("linkedin.com")) channel = "linkedin";
+          if (link.href.includes("instagram.com")) channel = "instagram";
+          if (link.href.includes("m.me/")) channel = "messenger";
+          if (link.href.includes("wa.me/")) channel = "whatsapp";
+
+          trackEvent("contact_click", {
+            channel,
+            destination: link.href
+          });
+        });
+      });
+
+      document.querySelectorAll(".store-buttons a").forEach((link) => {
+        link.addEventListener("click", () => {
+          trackEvent("app_store_click", {
+            store: link.href.includes("play.google.com") ? "google_play" : "app_store",
+            destination: link.href
+          });
+        });
+      });
 
       emailReveal.addEventListener("click", () => {
         if (isBotLike()) return;
@@ -405,11 +519,19 @@
         const emailText = document.getElementById("email-text");
 
         if (emailText.textContent.includes("@")) {
+          trackEvent("contact_click", {
+            channel: "email",
+            step: "mailto_open"
+          });
           window.location.href = `mailto:${email}`;
           return;
         }
 
         emailText.textContent = email;
+        trackEvent("email_reveal", {
+          channel: "email",
+          step: "reveal"
+        });
       });
 
       whatsappLink.addEventListener("click", (event) => {
@@ -422,6 +544,25 @@
         if (phoneText.textContent.includes("•")) {
           event.preventDefault();
           phoneText.textContent = whatsappLink.dataset.prettyPhone;
+          trackEvent("whatsapp_reveal", {
+            channel: "whatsapp",
+            step: "reveal"
+          });
+          return;
+        }
+
+        trackEvent("contact_click", {
+          channel: "whatsapp",
+          step: "open_chat",
+          destination: whatsappLink.href
+        });
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          trackEvent("engagement_ping", {
+            engagement_point: "page_hidden"
+          });
         }
       });
     </script>
