@@ -18,13 +18,24 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QQKYB7SDJ6"></script>
+    <script
+      id="Cookiebot"
+      src="https://consent.cookiebot.com/uc.js"
+      data-cbid="0efea413-6aa0-447a-bc9f-7e2748b12fd1"
+      data-blockingmode="auto"
+      type="text/javascript"
+    ></script>
+    <script
+      type="text/plain"
+      data-cookieconsent="statistics"
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-QQKYB7SDJ6"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag("js", new Date());
     </script>
   </head>
   <body>
@@ -244,14 +255,29 @@
     <script>
       const GA_MEASUREMENT_ID = (document.querySelector('meta[name="ga4-measurement-id"]')?.content || "G-QQKYB7SDJ6").trim();
       const isAnalyticsEnabled = /^G-[A-Z0-9]+$/i.test(GA_MEASUREMENT_ID);
+      let gaInitialized = false;
 
-      if (isAnalyticsEnabled && window.gtag) {
+      function hasStatisticsConsent() {
+        return !!(window.Cookiebot && window.Cookiebot.consent && window.Cookiebot.consent.statistics);
+      }
+
+      function initAnalytics() {
+        if (!isAnalyticsEnabled || !window.gtag || gaInitialized || !hasStatisticsConsent()) return;
+
+        gtag("js", new Date());
         gtag("config", GA_MEASUREMENT_ID, {
           send_page_view: true,
           anonymize_ip: true,
           debug_mode: /localhost|127\.0\.0\.1/.test(window.location.hostname)
         });
+
+        gaInitialized = true;
       }
+
+      window.addEventListener("CookiebotOnConsentReady", initAnalytics);
+      window.addEventListener("CookiebotOnAccept", initAnalytics);
+      window.addEventListener("CookiebotOnTagsExecuted", initAnalytics);
+      initAnalytics();
 
       function parseAttribution() {
         const params = new URLSearchParams(window.location.search);
@@ -297,7 +323,7 @@
       const firstTouch = getFirstTouch(attribution);
 
       function trackEvent(name, params = {}) {
-        if (!window.gtag || !isAnalyticsEnabled) return;
+        if (!window.gtag || !isAnalyticsEnabled || !gaInitialized || !hasStatisticsConsent()) return;
 
         gtag("event", name, {
           page_lang: document.documentElement.lang || "en",
