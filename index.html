@@ -86,7 +86,7 @@
           loading="eager"
           decoding="async"
         />
-        <p class="eyebrow" data-i18n="eyebrow">Hello 👋</p>
+        <p class="eyebrow" id="hello-wave-trigger" data-i18n="eyebrow" role="button" tabindex="0" aria-label="Play waving emoji animation">Hello 👋</p>
         <p class="person-name" data-i18n="displayName">KÁLMÁN Fekete</p>
         <p class="role-title" data-i18n="roleTitle">Senior IT Project Manager</p>
         <p class="keyword-line" data-i18n="keywordLine">IT PgM • DX @ Scale • Log/Bank/Energy • Stakeholder + Delivery</p>
@@ -238,6 +238,8 @@
         <p>© <span id="year"></span> <span data-i18n="brand">Saját Oldalam</span></p>
       </footer>
     </main>
+
+    <div id="wave-burst" class="wave-burst" aria-hidden="true">👋</div>
 
     <script>
       const GA_MEASUREMENT_ID = (document.querySelector('meta[name="ga4-measurement-id"]')?.content || "G-QQKYB7SDJ6").trim();
@@ -484,6 +486,54 @@
 
       trackEvent("landing_view", {
         engagement_point: "initial_load"
+      });
+
+      const helloWaveTrigger = document.getElementById("hello-wave-trigger");
+      const waveBurst = document.getElementById("wave-burst");
+      let waveBurstActive = false;
+
+      function getWavingEmoji(text) {
+        const matchedEmoji = (text || "").match(/\p{Extended_Pictographic}/u);
+        return matchedEmoji ? matchedEmoji[0] : "👋";
+      }
+
+      function playWaveBurst() {
+        if (waveBurstActive || !helloWaveTrigger || !waveBurst) return;
+
+        waveBurstActive = true;
+        const sourceRect = helloWaveTrigger.getBoundingClientRect();
+        const sourceX = sourceRect.left + sourceRect.width / 2;
+        const sourceY = sourceRect.top + sourceRect.height / 2;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        waveBurst.textContent = getWavingEmoji(helloWaveTrigger.textContent);
+        waveBurst.style.left = `${sourceX}px`;
+        waveBurst.style.top = `${sourceY}px`;
+        waveBurst.style.setProperty("--dx", `${centerX - sourceX}px`);
+        waveBurst.style.setProperty("--dy", `${centerY - sourceY}px`);
+
+        waveBurst.classList.remove("is-active");
+        void waveBurst.offsetWidth;
+        waveBurst.classList.add("is-active");
+
+        trackEvent("hello_wave", {
+          interaction_source: "hero_eyebrow",
+          interaction_target: "hello_emoji"
+        });
+      }
+
+      helloWaveTrigger.addEventListener("click", playWaveBurst);
+      helloWaveTrigger.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          playWaveBurst();
+        }
+      });
+
+      waveBurst.addEventListener("animationend", () => {
+        waveBurst.classList.remove("is-active");
+        waveBurstActive = false;
       });
 
       const emailReveal = document.getElementById("email-reveal");

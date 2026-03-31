@@ -144,6 +144,14 @@ body {
   color: var(--accent);
   font-weight: 600;
   font-size: 0.95rem;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.eyebrow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .person-name {
@@ -328,6 +336,50 @@ h1 {
 .store-btn:focus-visible {
   border-color: var(--accent);
   background: #172033;
+}
+
+.wave-burst {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: clamp(2.2rem, 10vw, 5rem);
+  line-height: 1;
+}
+
+.wave-burst.is-active {
+  animation: wave-burst-anim 1400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes wave-burst-anim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(3.4) rotate(16deg);
+  }
+  45% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(3.45) rotate(-12deg);
+  }
+  55% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(3.4) rotate(14deg);
+  }
+  65% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(3.35) rotate(-8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
 }
 
 @media (min-width: 640px) {
