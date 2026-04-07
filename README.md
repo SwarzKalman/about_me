@@ -17,6 +17,14 @@ A nyelvválasztás kliensoldali JavaScriptből történik, külön build lépés
 - `index.html` – oldal tartalma
 - `styles.css` – mobil-first stílusok
 
+## Consent és analytics
+
+- Az oldal saját, first-party consent bannert használ, Cookiebot nélkül.
+- A GA4 az `index.html` fájlban, a `<meta name="ga4-measurement-id">` mezőből olvassa a mérési azonosítót.
+- A Google Analytics csak kifejezett statisztikai hozzájárulás után töltődik be.
+- A látogató bármikor újranyithatja és módosíthatja a döntését a privacy gombbal.
+- Az UTM / first-touch attribúció csak consent után kerül tartós tárolásba.
+
 ## Testreszabás
 
 Szerkeszd az `index.html` fájlban az alábbi adatokat:
@@ -25,6 +33,8 @@ Szerkeszd az `index.html` fájlban az alábbi adatokat:
 - telefonszám (`tel:` link + megjelenített szöveg)
 - közösségi profil linkek (LinkedIn, GitHub, Telegram)
 - név / brand a címben és a láblécben
+- consent banner szövegek a beépített `dictionary` objektumban
+- GA4 measurement ID a meta tagben
 
 ## GitHub Pages deploy
 

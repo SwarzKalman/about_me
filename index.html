@@ -18,19 +18,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
-    <script
-      id="Cookiebot"
-      src="https://consent.cookiebot.com/uc.js"
-      data-cbid="0efea413-6aa0-447a-bc9f-7e2748b12fd1"
-      data-blockingmode="auto"
-      type="text/javascript"
-    ></script>
-    <script
-      type="text/plain"
-      data-cookieconsent="statistics"
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-QQKYB7SDJ6"
-    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -252,32 +239,118 @@
 
     <div id="wave-burst" class="wave-burst" aria-hidden="true">👋</div>
 
+    <div class="consent-backdrop" id="consent-backdrop" hidden></div>
+
+    <section class="consent-banner" id="consent-banner" aria-labelledby="consent-title" aria-describedby="consent-description" hidden>
+      <div class="consent-panel" role="dialog" aria-modal="false">
+        <p class="consent-eyebrow" data-i18n="consentEyebrow">Privacy settings</p>
+        <h2 class="consent-title" id="consent-title" data-i18n="consentTitle">Your privacy choices</h2>
+        <p class="consent-description" id="consent-description" data-i18n="consentDescription">
+          I only use optional analytics after your consent to understand which channels bring visitors to this page.
+        </p>
+        <div class="consent-types">
+          <div class="consent-type">
+            <span class="consent-type-label" data-i18n="consentNecessaryLabel">Necessary</span>
+            <span class="consent-type-value" data-i18n="consentNecessaryValue">Always active</span>
+          </div>
+          <div class="consent-type">
+            <span class="consent-type-label" data-i18n="consentStatisticsLabel">Statistics</span>
+            <span class="consent-type-value" data-i18n="consentStatisticsValue">Google Analytics 4 for visits and interaction events</span>
+          </div>
+        </div>
+        <p class="consent-note" data-i18n="consentNote">You can change this decision any time with the privacy button.</p>
+        <div class="consent-actions">
+          <button type="button" class="consent-btn consent-btn-secondary" id="consent-reject" data-i18n="consentReject">Reject analytics</button>
+          <button type="button" class="consent-btn consent-btn-primary" id="consent-accept" data-i18n="consentAccept">Accept analytics</button>
+        </div>
+      </div>
+    </section>
+
+    <button type="button" class="consent-manage" id="consent-manage" data-i18n="consentManage" aria-haspopup="dialog">
+      Privacy settings
+    </button>
+
     <script>
       const GA_MEASUREMENT_ID = (document.querySelector('meta[name="ga4-measurement-id"]')?.content || "G-QQKYB7SDJ6").trim();
       const isAnalyticsEnabled = /^G-[A-Z0-9]+$/i.test(GA_MEASUREMENT_ID);
+      const CONSENT_STORAGE_KEY = "site_consent_v1";
+      const FIRST_TOUCH_STORAGE_KEY = "ga_first_touch_v1";
+      const CONSENT_CHANGE_EVENT = "siteconsentchange";
       let gaInitialized = false;
+      let gaScriptLoading = null;
 
-      function hasStatisticsConsent() {
-        return !!(window.Cookiebot && window.Cookiebot.consent && window.Cookiebot.consent.statistics);
-      }
+      function loadGtagScript(measurementId) {
+        if (!isAnalyticsEnabled || !measurementId) return Promise.resolve(false);
+        if (document.querySelector('script[data-ga-loader="true"]')) return Promise.resolve(true);
+        if (gaScriptLoading) return gaScriptLoading;
 
-      function initAnalytics() {
-        if (!isAnalyticsEnabled || !window.gtag || gaInitialized || !hasStatisticsConsent()) return;
-
-        gtag("js", new Date());
-        gtag("config", GA_MEASUREMENT_ID, {
-          send_page_view: true,
-          anonymize_ip: true,
-          debug_mode: /localhost|127\.0\.0\.1/.test(window.location.hostname)
+        gaScriptLoading = new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+          script.dataset.gaLoader = "true";
+          script.onload = () => resolve(true);
+          script.onerror = () => {
+            gaScriptLoading = null;
+            reject(new Error("Failed to load Google Analytics"));
+          };
+          document.head.appendChild(script);
         });
 
-        gaInitialized = true;
+        return gaScriptLoading;
       }
 
-      window.addEventListener("CookiebotOnConsentReady", initAnalytics);
-      window.addEventListener("CookiebotOnAccept", initAnalytics);
-      window.addEventListener("CookiebotOnTagsExecuted", initAnalytics);
-      initAnalytics();
+      function readConsentState() {
+        try {
+          const raw = localStorage.getItem(CONSENT_STORAGE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          return {
+            statistics: parsed.statistics === true,
+            updated_at: typeof parsed.updated_at === "string" ? parsed.updated_at : ""
+          };
+        } catch {
+          return null;
+        }
+      }
+
+      function dispatchConsentChange(consent) {
+        window.dispatchEvent(
+          new CustomEvent(CONSENT_CHANGE_EVENT, {
+            detail: consent
+          })
+        );
+      }
+
+      function writeConsentState(statistics) {
+        const consent = {
+          statistics: statistics === true,
+          updated_at: new Date().toISOString()
+        };
+
+        try {
+          localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(consent));
+        } catch {
+          dispatchConsentChange(consent);
+          return consent;
+        }
+
+        dispatchConsentChange(consent);
+        return consent;
+      }
+
+      function hasStoredConsentDecision() {
+        try {
+          return localStorage.getItem(CONSENT_STORAGE_KEY) !== null;
+        } catch {
+          return !!readConsentState();
+        }
+      }
+
+      function hasStatisticsConsent() {
+        const consent = readConsentState();
+        return !!(consent && consent.statistics);
+      }
 
       function parseAttribution() {
         const params = new URLSearchParams(window.location.search);
@@ -294,10 +367,20 @@
         };
       }
 
+      const attribution = parseAttribution();
+
       function getFirstTouch(currentAttr) {
-        const storageKey = "ga_first_touch_v1";
+        if (!hasStatisticsConsent()) {
+          return {
+            source: currentAttr.utm_source,
+            medium: currentAttr.utm_medium,
+            campaign: currentAttr.utm_campaign,
+            first_seen_at: ""
+          };
+        }
+
         try {
-          const existing = localStorage.getItem(storageKey);
+          const existing = localStorage.getItem(FIRST_TOUCH_STORAGE_KEY);
           if (existing) return JSON.parse(existing);
 
           const firstTouch = {
@@ -307,7 +390,7 @@
             first_seen_at: new Date().toISOString()
           };
 
-          localStorage.setItem(storageKey, JSON.stringify(firstTouch));
+          localStorage.setItem(FIRST_TOUCH_STORAGE_KEY, JSON.stringify(firstTouch));
           return firstTouch;
         } catch {
           return {
@@ -319,8 +402,28 @@
         }
       }
 
-      const attribution = parseAttribution();
-      const firstTouch = getFirstTouch(attribution);
+      let firstTouch = getFirstTouch(attribution);
+
+      async function initAnalytics() {
+        if (!isAnalyticsEnabled || !window.gtag || gaInitialized || !hasStatisticsConsent()) return;
+
+        try {
+          await loadGtagScript(GA_MEASUREMENT_ID);
+        } catch {
+          return;
+        }
+
+        firstTouch = getFirstTouch(attribution);
+
+        gtag("js", new Date());
+        gtag("config", GA_MEASUREMENT_ID, {
+          send_page_view: true,
+          anonymize_ip: true,
+          debug_mode: /localhost|127\.0\.0\.1/.test(window.location.hostname)
+        });
+
+        gaInitialized = true;
+      }
 
       function trackEvent(name, params = {}) {
         if (!window.gtag || !isAnalyticsEnabled || !gaInitialized || !hasStatisticsConsent()) return;
@@ -365,7 +468,18 @@
           androidBtn: "Android",
           iosBtn: "iOS",
           whatsappAria: "WhatsApp chat megnyitása",
-          brand: "Fekete Kálmán"
+          brand: "Fekete Kálmán",
+          consentEyebrow: "Adatvedelmi beallitasok",
+          consentTitle: "Adatkezelesi beallitasok",
+          consentDescription: "Az opcionális analitikát csak a hozzájárulásod után használom, hogy lássam, mely csatornák hozzák a látogatókat erre az oldalra.",
+          consentNecessaryLabel: "Szükséges",
+          consentNecessaryValue: "Mindig aktiv",
+          consentStatisticsLabel: "Statisztika",
+          consentStatisticsValue: "Google Analytics 4 a latogatasok es interakciok meresere",
+          consentNote: "A döntésedet bármikor módosíthatod az adatvédelmi gombbal.",
+          consentReject: "Analitika elutasitasa",
+          consentAccept: "Analitika elfogadasa",
+          consentManage: "Adatvedelmi beallitasok"
         },
         en: {
           htmlLang: "en",
@@ -390,7 +504,18 @@
           androidBtn: "Android",
           iosBtn: "iOS",
           whatsappAria: "Open WhatsApp chat",
-          brand: "KÁLMÁN Fekete"
+          brand: "KÁLMÁN Fekete",
+          consentEyebrow: "Privacy settings",
+          consentTitle: "Your privacy choices",
+          consentDescription: "I only use optional analytics after your consent to understand which channels bring visitors to this page.",
+          consentNecessaryLabel: "Necessary",
+          consentNecessaryValue: "Always active",
+          consentStatisticsLabel: "Statistics",
+          consentStatisticsValue: "Google Analytics 4 for visits and interaction events",
+          consentNote: "You can change this decision any time with the privacy button.",
+          consentReject: "Reject analytics",
+          consentAccept: "Accept analytics",
+          consentManage: "Privacy settings"
         },
         fr: {
           htmlLang: "fr",
@@ -415,7 +540,18 @@
           androidBtn: "Android",
           iosBtn: "iOS",
           whatsappAria: "Ouvrir la discussion WhatsApp",
-          brand: "KÁLMÁN Fekete"
+          brand: "KÁLMÁN Fekete",
+          consentEyebrow: "Parametres de confidentialite",
+          consentTitle: "Vos choix de confidentialite",
+          consentDescription: "Je n'utilise l'analyse optionnelle qu'apres votre consentement pour comprendre quels canaux apportent des visiteurs a cette page.",
+          consentNecessaryLabel: "Necessaire",
+          consentNecessaryValue: "Toujours actif",
+          consentStatisticsLabel: "Statistiques",
+          consentStatisticsValue: "Google Analytics 4 pour les visites et les interactions",
+          consentNote: "Vous pouvez modifier cette decision a tout moment avec le bouton de confidentialite.",
+          consentReject: "Refuser l'analyse",
+          consentAccept: "Accepter l'analyse",
+          consentManage: "Confidentialite"
         }
       };
 
@@ -482,6 +618,43 @@
 
       const langTrigger = document.getElementById("lang-trigger");
       const langMenu = document.getElementById("lang-menu");
+      const consentBackdrop = document.getElementById("consent-backdrop");
+      const consentBanner = document.getElementById("consent-banner");
+      const consentManage = document.getElementById("consent-manage");
+      const consentAccept = document.getElementById("consent-accept");
+      const consentReject = document.getElementById("consent-reject");
+
+      function toggleConsentBanner(forceState) {
+        const isOpen = typeof forceState === "boolean" ? forceState : consentBanner.hidden;
+        consentBanner.hidden = !isOpen;
+        consentBackdrop.hidden = !isOpen;
+        consentManage.setAttribute("aria-expanded", String(isOpen));
+      }
+
+      function syncConsentUi() {
+        toggleConsentBanner(!hasStoredConsentDecision());
+      }
+
+      function setStatisticsConsent(enabled) {
+        const consent = writeConsentState(enabled);
+        if (!enabled) {
+          gaInitialized = false;
+          try {
+            localStorage.removeItem(FIRST_TOUCH_STORAGE_KEY);
+          } catch {}
+        }
+        toggleConsentBanner(false);
+        if (consent.statistics) {
+          initAnalytics();
+          trackEvent("consent_update", {
+            statistics: "granted"
+          });
+        } else {
+          trackEvent("consent_update", {
+            statistics: "denied"
+          });
+        }
+      }
 
       function toggleMenu(forceState) {
         const open = typeof forceState === "boolean" ? forceState : langMenu.hidden;
@@ -504,11 +677,30 @@
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") toggleMenu(false);
+        if (event.key === "Escape") toggleConsentBanner(false);
+      });
+
+      consentManage.addEventListener("click", () => {
+        toggleConsentBanner();
+      });
+
+      consentAccept.addEventListener("click", () => {
+        setStatisticsConsent(true);
+      });
+
+      consentReject.addEventListener("click", () => {
+        setStatisticsConsent(false);
+      });
+
+      window.addEventListener(CONSENT_CHANGE_EVENT, () => {
+        firstTouch = getFirstTouch(attribution);
       });
 
       document.getElementById("year").textContent = new Date().getFullYear();
       buildContacts();
       applyLanguage("en");
+      syncConsentUi();
+      initAnalytics();
 
       trackEvent("landing_view", {
         engagement_point: "initial_load"
