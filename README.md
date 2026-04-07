@@ -1,5 +1,11 @@
 # Mobilra optimalizált kapcsolat oldal
 
+```bash
+git add styles.css README.md
+git commit -m "fix mobile consent banner layout"
+git push origin main
+```
+
 Ez a repository egy letisztult, **GitHub Pages kompatibilis** statikus weboldalt tartalmaz, amely kifejezetten kapcsolatfelvételre készült.
 
 ## Többnyelvűség

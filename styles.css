@@ -275,8 +275,9 @@ h1 {
   position: fixed;
   inset: 0;
   z-index: 35;
-  background: rgba(2, 6, 23, 0.34);
+   background: rgba(2, 6, 23, 0.54);
   backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
 }
 
 .consent-backdrop[hidden] {
@@ -285,10 +286,13 @@ h1 {
 
 .consent-banner {
   position: fixed;
-  inset: auto 1rem 1rem;
-  z-index: 40;
-  display: flex;
-  justify-content: center;
+   left: 1rem;
+   right: 1rem;
+   bottom: 1rem;
+   z-index: 40;
+   display: flex;
+   justify-content: center;
+   pointer-events: none;
 }
 
 .consent-banner[hidden] {
@@ -296,12 +300,15 @@ h1 {
 }
 
 .consent-panel {
-  width: min(420px, calc(100vw - 2rem));
-  padding: 1rem 1rem 0.95rem;
-  border: 1px solid rgba(56, 189, 248, 0.28);
-  border-radius: 16px;
-  background: #0f172a;
-  box-shadow: 0 16px 34px rgba(2, 6, 23, 0.34);
+   width: min(420px, calc(100vw - 2rem));
+   max-height: min(78vh, 36rem);
+   overflow: auto;
+   padding: 1rem 1rem 0.95rem;
+   border: 1px solid rgba(56, 189, 248, 0.28);
+   border-radius: 16px;
+   background: #0f172a;
+   box-shadow: 0 16px 34px rgba(2, 6, 23, 0.34);
+   pointer-events: auto;
 }
 
 .consent-eyebrow {
@@ -360,10 +367,11 @@ h1 {
 }
 
 .consent-actions {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.65rem;
-  align-items: stretch;
+   margin-top: 1rem;
+   display: flex;
+   flex-wrap: wrap;
+   gap: 0.65rem;
+   align-items: stretch;
 }
 
 .consent-btn,
@@ -396,10 +404,68 @@ h1 {
 }
 
 .consent-btn-secondary {
-  flex: 0 1 150px;
-  background: #162033;
-  color: #a8b6ca;
-  border-color: rgba(100, 116, 139, 0.45);
+   flex: 0 1 150px;
+   background: #162033;
+   color: #a8b6ca;
+   border-color: rgba(100, 116, 139, 0.45);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .consent-backdrop {
+    background: rgba(2, 6, 23, 0.78);
+  }
+}
+
+@media (max-width: 640px) {
+  .consent-banner {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .consent-panel {
+    width: 100%;
+    max-height: min(70vh, 32rem);
+    padding: 0.95rem 0.95rem 0.9rem;
+    border-radius: 14px;
+  }
+
+  .consent-title {
+    font-size: 1.02rem;
+  }
+
+  .consent-description,
+  .consent-note,
+  .consent-type-value {
+    font-size: 0.86rem;
+  }
+
+  .consent-type {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .consent-type-value {
+    text-align: left;
+  }
+
+  .consent-actions {
+    flex-direction: column-reverse;
+  }
+
+  .consent-btn,
+  .consent-btn-primary,
+  .consent-btn-secondary {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .consent-manage {
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    padding: 0.68rem 0.9rem;
+    font-size: 0.9rem;
+  }
 }
 
 .consent-btn-primary:hover,
