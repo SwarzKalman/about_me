@@ -278,6 +278,7 @@
       const CONSENT_CHANGE_EVENT = "siteconsentchange";
       let gaInitialized = false;
       let gaScriptLoading = null;
+      let consentModeApplied = false;
 
       function loadGtagScript(measurementId) {
         if (!isAnalyticsEnabled || !measurementId) return Promise.resolve(false);
@@ -298,6 +299,35 @@
         });
 
         return gaScriptLoading;
+      }
+
+      function applyConsentMode() {
+        if (!isAnalyticsEnabled || !window.gtag) return;
+
+        gtag("consent", "default", {
+          analytics_storage: "denied",
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+          wait_for_update: 500
+        });
+
+        consentModeApplied = true;
+
+        if (hasStatisticsConsent()) {
+          gtag("consent", "update", {
+            analytics_storage: "granted"
+          });
+        }
+      }
+
+      function updateConsentMode(statisticsEnabled) {
+        if (!isAnalyticsEnabled || !window.gtag) return;
+        if (!consentModeApplied) applyConsentMode();
+
+        gtag("consent", "update", {
+          analytics_storage: statisticsEnabled ? "granted" : "denied"
+        });
       }
 
       function readConsentState() {
@@ -413,6 +443,7 @@
           return;
         }
 
+        applyConsentMode();
         firstTouch = getFirstTouch(attribution);
 
         gtag("js", new Date());
@@ -637,6 +668,7 @@
 
       function setStatisticsConsent(enabled) {
         const consent = writeConsentState(enabled);
+        updateConsentMode(consent.statistics);
         if (!enabled) {
           gaInitialized = false;
           try {
@@ -698,6 +730,7 @@
 
       document.getElementById("year").textContent = new Date().getFullYear();
       buildContacts();
+      applyConsentMode();
       applyLanguage("en");
       syncConsentUi();
       initAnalytics();
