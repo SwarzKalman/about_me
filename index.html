@@ -239,29 +239,47 @@
 
     <div id="wave-burst" class="wave-burst" aria-hidden="true">👋</div>
 
-    <div class="consent-backdrop" id="consent-backdrop" hidden></div>
-
     <section class="consent-banner" id="consent-banner" aria-labelledby="consent-title" aria-describedby="consent-description" hidden>
-      <div class="consent-panel" role="dialog" aria-modal="false">
-        <p class="consent-eyebrow" data-i18n="consentEyebrow">Privacy settings</p>
-        <h2 class="consent-title" id="consent-title" data-i18n="consentTitle">Your privacy choices</h2>
-        <p class="consent-description" id="consent-description" data-i18n="consentDescription">
-          I only use optional analytics after your consent to understand which channels bring visitors to this page.
-        </p>
-        <div class="consent-types">
-          <div class="consent-type">
-            <span class="consent-type-label" data-i18n="consentNecessaryLabel">Necessary</span>
-            <span class="consent-type-value" data-i18n="consentNecessaryValue">Always active</span>
+      <div class="consent-panel">
+        <div class="consent-summary">
+          <div class="consent-copy">
+            <p class="consent-eyebrow" data-i18n="consentEyebrow">Privacy settings</p>
+            <h2 class="consent-title" id="consent-title" data-i18n="consentTitle">Your privacy choices</h2>
+            <p class="consent-description" id="consent-description" data-i18n="consentDescription">
+              I only use optional analytics after your consent for statistical purposes to improve and refine the application.
+            </p>
           </div>
-          <div class="consent-type">
-            <span class="consent-type-label" data-i18n="consentStatisticsLabel">Statistics</span>
-            <span class="consent-type-value" data-i18n="consentStatisticsValue">Google Analytics 4 for visits and interaction events</span>
+          <div class="consent-actions">
+            <button type="button" class="consent-btn consent-btn-link" id="consent-reject" data-i18n="consentReject">Use necessary only</button>
+            <button type="button" class="consent-btn consent-btn-secondary" id="consent-customize" data-i18n="consentCustomize" aria-expanded="false" aria-controls="consent-preferences">Customize</button>
+            <button type="button" class="consent-btn consent-btn-primary" id="consent-accept" data-i18n="consentAccept">Accept analytics</button>
           </div>
         </div>
-        <p class="consent-note" data-i18n="consentNote">You can change this decision any time with the privacy button.</p>
-        <div class="consent-actions">
-          <button type="button" class="consent-btn consent-btn-secondary" id="consent-reject" data-i18n="consentReject">Reject analytics</button>
-          <button type="button" class="consent-btn consent-btn-primary" id="consent-accept" data-i18n="consentAccept">Accept analytics</button>
+
+        <div class="consent-preferences" id="consent-preferences" hidden>
+          <div class="consent-types">
+            <div class="consent-type consent-type-static">
+              <div>
+                <span class="consent-type-label" data-i18n="consentNecessaryLabel">Necessary</span>
+                <p class="consent-type-description" data-i18n="consentNecessaryDescription">Required for language selection, interaction states, and core page functionality.</p>
+              </div>
+              <span class="consent-type-badge" data-i18n="consentNecessaryValue">Always active</span>
+            </div>
+            <label class="consent-type consent-type-toggle" for="consent-statistics-toggle">
+              <div>
+                <span class="consent-type-label" data-i18n="consentStatisticsLabel">Statistics</span>
+                <p class="consent-type-description" data-i18n="consentStatisticsValue">Google Analytics 4 for visits and interaction events</p>
+              </div>
+              <span class="consent-switch-wrap">
+                <input type="checkbox" class="consent-switch-input" id="consent-statistics-toggle" />
+                <span class="consent-switch" aria-hidden="true"></span>
+              </span>
+            </label>
+          </div>
+          <div class="consent-preferences-actions">
+            <p class="consent-note" data-i18n="consentNote">You can change this decision any time with the privacy button.</p>
+            <button type="button" class="consent-btn consent-btn-secondary consent-save" id="consent-save" data-i18n="consentSave">Save preferences</button>
+          </div>
         </div>
       </div>
     </section>
@@ -484,7 +502,7 @@
           roleTitle: "Senior IT Projektmenedzser",
           keywordLine: "IT Projekt & Program • Digitális transzformáció • Mobil applikációk • Logisztika/Bank/Energia • Stakeholder + Delivery",
           title: "Kapcsolat",
-          subtitle: "Itt találsz meg a leggyorsabban. Válaszd a neked kényelmes csatornát.",
+          subtitle: "Ezen felületeken érsz el. Válaszd a neked megfelelő csatornát.",
           emailTitle: "E-mail",
           emailCta: "Küldj egy e-mailt",
           contactsAria: "Kapcsolati lehetőségek",
@@ -500,17 +518,20 @@
           iosBtn: "iOS",
           whatsappAria: "WhatsApp chat megnyitása",
           brand: "Fekete Kálmán",
-          consentEyebrow: "Adatvedelmi beallitasok",
-          consentTitle: "Adatkezelesi beallitasok",
-          consentDescription: "Az opcionális analitikát csak a hozzájárulásod után használom, hogy lássam, mely csatornák hozzák a látogatókat erre az oldalra.",
+          consentEyebrow: "Adatvédelmi beállítások",
+          consentTitle: "Adatkezelési beállítások",
+          consentDescription: "Az opcionális analitikát csak a hozzájárulásod után használom statisztikai célokra, hogy segítse az alkalmazás fejlesztését és tökéletesítését.",
           consentNecessaryLabel: "Szükséges",
-          consentNecessaryValue: "Mindig aktiv",
+          consentNecessaryDescription: "A nyelvválasztáshoz, interakciókhoz és az oldal alapműküdéséhez kell.",
+          consentNecessaryValue: "Mindíg aktiv",
           consentStatisticsLabel: "Statisztika",
-          consentStatisticsValue: "Google Analytics 4 a latogatasok es interakciok meresere",
+          consentStatisticsValue: "Google Analytics 4 a lytogatasok es interakciók mérésére",
           consentNote: "A döntésedet bármikor módosíthatod az adatvédelmi gombbal.",
-          consentReject: "Analitika elutasitasa",
-          consentAccept: "Analitika elfogadasa",
-          consentManage: "Adatvedelmi beallitasok"
+          consentReject: "Csak szükséges",
+          consentCustomize: "Testreszabás",
+          consentSave: "Beállítasok mentése",
+          consentAccept: "Analitika elfogadása",
+          consentManage: "Adatvedelmi beállítások"
         },
         en: {
           htmlLang: "en",
@@ -538,13 +559,16 @@
           brand: "KÁLMÁN Fekete",
           consentEyebrow: "Privacy settings",
           consentTitle: "Your privacy choices",
-          consentDescription: "I only use optional analytics after your consent to understand which channels bring visitors to this page.",
+          consentDescription: "I only use optional analytics after your consent for statistical purposes to improve and refine the application.",
           consentNecessaryLabel: "Necessary",
+          consentNecessaryDescription: "Required for language selection, interaction states, and core page functionality.",
           consentNecessaryValue: "Always active",
           consentStatisticsLabel: "Statistics",
           consentStatisticsValue: "Google Analytics 4 for visits and interaction events",
           consentNote: "You can change this decision any time with the privacy button.",
-          consentReject: "Reject analytics",
+          consentReject: "Use necessary only",
+          consentCustomize: "Customize",
+          consentSave: "Save preferences",
           consentAccept: "Accept analytics",
           consentManage: "Privacy settings"
         },
@@ -574,13 +598,16 @@
           brand: "KÁLMÁN Fekete",
           consentEyebrow: "Parametres de confidentialite",
           consentTitle: "Vos choix de confidentialite",
-          consentDescription: "Je n'utilise l'analyse optionnelle qu'apres votre consentement pour comprendre quels canaux apportent des visiteurs a cette page.",
+          consentDescription: "Je n'utilise l'analyse optionnelle qu'apres votre consentement a des fins statistiques pour ameliorer et affiner l'application.",
           consentNecessaryLabel: "Necessaire",
+          consentNecessaryDescription: "Necessaire pour la langue, les interactions et le fonctionnement essentiel de la page.",
           consentNecessaryValue: "Toujours actif",
           consentStatisticsLabel: "Statistiques",
           consentStatisticsValue: "Google Analytics 4 pour les visites et les interactions",
           consentNote: "Vous pouvez modifier cette decision a tout moment avec le bouton de confidentialite.",
-          consentReject: "Refuser l'analyse",
+          consentReject: "Necessaire uniquement",
+          consentCustomize: "Personnaliser",
+          consentSave: "Enregistrer",
           consentAccept: "Accepter l'analyse",
           consentManage: "Confidentialite"
         }
@@ -649,21 +676,33 @@
 
       const langTrigger = document.getElementById("lang-trigger");
       const langMenu = document.getElementById("lang-menu");
-      const consentBackdrop = document.getElementById("consent-backdrop");
       const consentBanner = document.getElementById("consent-banner");
       const consentManage = document.getElementById("consent-manage");
       const consentAccept = document.getElementById("consent-accept");
       const consentReject = document.getElementById("consent-reject");
+      const consentCustomize = document.getElementById("consent-customize");
+      const consentPreferences = document.getElementById("consent-preferences");
+      const consentSave = document.getElementById("consent-save");
+      const consentStatisticsToggle = document.getElementById("consent-statistics-toggle");
+
+      function toggleConsentPreferences(forceState) {
+        const isOpen = typeof forceState === "boolean" ? forceState : consentPreferences.hidden;
+        consentPreferences.hidden = !isOpen;
+        consentCustomize.setAttribute("aria-expanded", String(isOpen));
+      }
 
       function toggleConsentBanner(forceState) {
         const isOpen = typeof forceState === "boolean" ? forceState : consentBanner.hidden;
         consentBanner.hidden = !isOpen;
-        consentBackdrop.hidden = !isOpen;
         consentManage.setAttribute("aria-expanded", String(isOpen));
+        if (!isOpen) toggleConsentPreferences(false);
       }
 
       function syncConsentUi() {
-        toggleConsentBanner(!hasStoredConsentDecision());
+        const hasDecision = hasStoredConsentDecision();
+        consentStatisticsToggle.checked = hasStatisticsConsent();
+        toggleConsentBanner(!hasDecision);
+        if (hasDecision) toggleConsentPreferences(false);
       }
 
       function setStatisticsConsent(enabled) {
@@ -716,12 +755,20 @@
         toggleConsentBanner();
       });
 
+      consentCustomize.addEventListener("click", () => {
+        toggleConsentPreferences();
+      });
+
       consentAccept.addEventListener("click", () => {
         setStatisticsConsent(true);
       });
 
       consentReject.addEventListener("click", () => {
         setStatisticsConsent(false);
+      });
+
+      consentSave.addEventListener("click", () => {
+        setStatisticsConsent(consentStatisticsToggle.checked);
       });
 
       window.addEventListener(CONSENT_CHANGE_EVENT, () => {
