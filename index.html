@@ -26,7 +26,7 @@
     </script>
   </head>
   <body>
-    <main class="container">
+    <main class="container page-shell">
       <nav class="lang-switch" aria-label="Nyelvválasztó / Language switcher / Sélecteur de langue">
         <button
           type="button"
@@ -236,6 +236,8 @@
         <p>© <span id="year"></span> <span data-i18n="brand">Saját Oldalam</span></p>
       </footer>
     </main>
+
+    <div class="consent-backdrop" id="consent-backdrop" aria-hidden="true" hidden></div>
 
     <div id="wave-burst" class="wave-burst" aria-hidden="true">👋</div>
 
@@ -678,6 +680,7 @@
       const langMenu = document.getElementById("lang-menu");
       const consentBanner = document.getElementById("consent-banner");
       const consentManage = document.getElementById("consent-manage");
+      const consentBackdrop = document.getElementById("consent-backdrop");
       const consentAccept = document.getElementById("consent-accept");
       const consentReject = document.getElementById("consent-reject");
       const consentCustomize = document.getElementById("consent-customize");
@@ -694,6 +697,8 @@
       function toggleConsentBanner(forceState) {
         const isOpen = typeof forceState === "boolean" ? forceState : consentBanner.hidden;
         consentBanner.hidden = !isOpen;
+        consentBackdrop.hidden = !isOpen;
+        document.body.classList.toggle("consent-active", isOpen);
         consentManage.setAttribute("aria-expanded", String(isOpen));
         if (!isOpen) toggleConsentPreferences(false);
       }
