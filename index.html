@@ -37,12 +37,12 @@
           aria-controls="lang-menu"
         >
           <span class="lang-globe" id="lang-flag" aria-hidden="true">
-            <svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true">
+            <svg class="flag-icon" viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true">
               <rect width="24" height="16" fill="#012169"></rect>
-              <rect x="10" width="4" height="16" fill="#ffffff"></rect>
-              <rect y="6" width="24" height="4" fill="#ffffff"></rect>
-              <rect x="10.8" width="2.4" height="16" fill="#c8102e"></rect>
-              <rect y="6.8" width="24" height="2.4" fill="#c8102e"></rect>
+              <path d="M0,0 24,16 M24,0 0,16" stroke="#fff" stroke-width="3.2"></path>
+              <path d="M0,0 24,16 M24,0 0,16" stroke="#c8102e" stroke-width="1.8"></path>
+              <path d="M12,0 V16 M0,8 H24" stroke="#fff" stroke-width="5.4"></path>
+              <path d="M12,0 V16 M0,8 H24" stroke="#c8102e" stroke-width="3.2"></path>
             </svg>
           </span>
           <span class="lang-current" id="lang-current">EN</span>
@@ -52,21 +52,21 @@
         <ul class="lang-menu" id="lang-menu" role="listbox" aria-label="Language options" hidden>
           <li>
             <button type="button" class="lang-option" data-lang="hu" role="option" aria-selected="false">
-              <span class="flag" aria-hidden="true">🇭🇺</span>
+              <span class="flag-icon" aria-hidden="true"><svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="24" height="16" fill="#ce2939"></rect><rect y="5.333" width="24" height="5.333" fill="#ffffff"></rect><rect y="10.666" width="24" height="5.334" fill="#477050"></rect></svg></span>
               <span>Magyar (HU)</span>
               <span class="check" aria-hidden="true">✓</span>
             </button>
           </li>
           <li>
             <button type="button" class="lang-option" data-lang="en" role="option" aria-selected="true">
-              <span class="flag" aria-hidden="true">🇬🇧</span>
+              <span class="flag-icon" aria-hidden="true"><svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="24" height="16" fill="#012169"></rect><path d="M0,0 24,16 M24,0 0,16" stroke="#fff" stroke-width="3.2"></path><path d="M0,0 24,16 M24,0 0,16" stroke="#c8102e" stroke-width="1.8"></path><path d="M12,0 V16 M0,8 H24" stroke="#fff" stroke-width="5.4"></path><path d="M12,0 V16 M0,8 H24" stroke="#c8102e" stroke-width="3.2"></path></svg></span>
               <span>English (EN)</span>
               <span class="check" aria-hidden="true">✓</span>
             </button>
           </li>
           <li>
             <button type="button" class="lang-option" data-lang="fr" role="option" aria-selected="false">
-              <span class="flag" aria-hidden="true">🇫🇷</span>
+              <span class="flag-icon" aria-hidden="true"><svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="8" height="16" fill="#0055a4"></rect><rect x="8" width="8" height="16" fill="#ffffff"></rect><rect x="16" width="8" height="16" fill="#ef4135"></rect></svg></span>
               <span>Français (FR)</span>
               <span class="check" aria-hidden="true">✓</span>
             </button>
@@ -644,7 +644,7 @@
 
       const flagSvgs = {
         hu: '<svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="24" height="16" fill="#ce2939"></rect><rect y="5.333" width="24" height="5.333" fill="#ffffff"></rect><rect y="10.666" width="24" height="5.334" fill="#477050"></rect></svg>',
-        en: '<svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="24" height="16" fill="#012169"></rect><rect x="10" width="4" height="16" fill="#ffffff"></rect><rect y="6" width="24" height="4" fill="#ffffff"></rect><rect x="10.8" width="2.4" height="16" fill="#c8102e"></rect><rect y="6.8" width="24" height="2.4" fill="#c8102e"></rect></svg>',
+        en: '<svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="24" height="16" fill="#012169"></rect><path d="M0,0 24,16 M24,0 0,16" stroke="#fff" stroke-width="3.2"></path><path d="M0,0 24,16 M24,0 0,16" stroke="#c8102e" stroke-width="1.8"></path><path d="M12,0 V16 M0,8 H24" stroke="#fff" stroke-width="5.4"></path><path d="M12,0 V16 M0,8 H24" stroke="#c8102e" stroke-width="3.2"></path></svg>',
         fr: '<svg viewBox="0 0 24 16" width="20" height="14" focusable="false" aria-hidden="true"><rect width="8" height="16" fill="#0055a4"></rect><rect x="8" width="8" height="16" fill="#ffffff"></rect><rect x="16" width="8" height="16" fill="#ef4135"></rect></svg>'
       };
 

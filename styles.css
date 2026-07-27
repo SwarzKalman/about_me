@@ -70,6 +70,14 @@ body {
   opacity: 0.9;
 }
 
+.flag-icon {
+  width: 20px;
+  height: 14px;
+  display: inline-flex;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
 .lang-menu {
   list-style: none;
   margin: 0.35rem 0 0;
