@@ -10,6 +10,7 @@
     <meta name="theme-color" content="#0f172a" />
     <meta name="ga4-measurement-id" content="G-QQKYB7SDJ6" />
     <link rel="canonical" href="https://feketekalman.hu/" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Contact | KÁLMÁN Fekete</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -192,16 +193,20 @@
       </section>
 
       <section class="app-promo" aria-label="Voyager Maps app">
-        <h2 class="app-title" data-i18n="appTitle">Try my Voyager Maps</h2>
-        <img
-          class="app-icon"
-          src="./images/voyager.png"
-          alt="Voyager Maps app icon"
-          width="92"
-          height="92"
-          loading="lazy"
-          decoding="async"
-        />
+        <h2 class="app-title">
+          <span data-i18n="appTitle">Try my</span>
+          <a
+            class="voyager-site-link"
+            href="https://getvoyagermaps.com/?utm_source=feketekalman.hu&amp;utm_medium=referral&amp;utm_campaign=about_me"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n-aria="voyagerCtaAria"
+            aria-label="Visit the Voyager Maps website"
+          >
+            <img class="voyager-brand-mark" src="./images/voyager.png" width="28" height="28" alt="" aria-hidden="true" />
+            <span>Voyager Maps</span>
+          </a>
+        </h2>
         <div class="store-buttons">
           <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.voyagermap.voyagermobil.voyagermobil" target="_blank" rel="noopener noreferrer" aria-label="Android app link">
             <span class="store-icon" aria-hidden="true">
@@ -515,7 +520,8 @@
           instagramAria: "Instagram profil megnyitása",
           messengerTitle: "Messenger",
           messengerAria: "Messenger chat megnyitása",
-          appTitle: "Próbáld ki a Voyager Maps-et",
+          appTitle: "Próbáld ki a",
+          voyagerCtaAria: "A Voyager Maps weboldal megnyitása",
           androidBtn: "Android",
           iosBtn: "iOS",
           whatsappAria: "WhatsApp chat megnyitása",
@@ -554,7 +560,8 @@
           instagramAria: "Open Instagram profile",
           messengerTitle: "Messenger",
           messengerAria: "Open Messenger chat",
-          appTitle: "Try my Voyager Maps",
+          appTitle: "Try my",
+          voyagerCtaAria: "Visit the Voyager Maps website",
           androidBtn: "Android",
           iosBtn: "iOS",
           whatsappAria: "Open WhatsApp chat",
@@ -593,7 +600,8 @@
           instagramAria: "Ouvrir le profil Instagram",
           messengerTitle: "Messenger",
           messengerAria: "Ouvrir la discussion Messenger",
-          appTitle: "Essayez mon Voyager Maps",
+          appTitle: "Essayez mon",
+          voyagerCtaAria: "Ouvrir le site Voyager Maps",
           androidBtn: "Android",
           iosBtn: "iOS",
           whatsappAria: "Ouvrir la discussion WhatsApp",
@@ -854,6 +862,12 @@
             channel,
             destination: link.href
           });
+        });
+      });
+
+      document.querySelector(".voyager-site-link").addEventListener("click", (event) => {
+        trackEvent("voyager_site_click", {
+          destination: event.currentTarget.href
         });
       });
 

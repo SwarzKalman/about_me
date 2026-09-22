@@ -650,19 +650,43 @@ body.consent-active .page-shell {
 }
 
 .app-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin: 0 0 0.8rem;
   font-size: 1.1rem;
 }
 
-.app-icon {
-  width: 92px;
-  height: 92px;
-  object-fit: cover;
-  border-radius: 22px;
-  border: 2px solid #334155;
-  box-shadow: 0 10px 18px rgba(2, 6, 23, 0.35);
-  margin: 0 auto 0.8rem;
+.voyager-site-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.6rem 1rem 0.6rem 0.7rem;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  background: #172033;
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.voyager-brand-mark {
   display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+}
+
+.voyager-site-link:hover,
+.voyager-site-link:focus-visible {
+  transform: translateY(-1px);
+  border-color: #60a5fa;
+  background: #1e293b;
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.28);
 }
 
 .store-buttons {
@@ -679,8 +703,8 @@ body.consent-active .page-shell {
   gap: 0.4rem;
   min-width: 120px;
   padding: 0.55rem 0.9rem;
-  border-radius: 10px;
   border: 1px solid #334155;
+  border-radius: 10px;
   background: #111827;
   color: #e2e8f0;
   text-decoration: none;
